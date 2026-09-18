@@ -360,6 +360,17 @@
         }
       }
     },
+    "A few seconds of you turning in this outfit.": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu kombinle dönerken birkaç saniyelik görüntün."
+          }
+        }
+      }
+    },
     "AI engine": {
       "extractionState": "manual",
       "localizations": {
@@ -378,6 +389,39 @@
           "stringUnit": {
             "state": "translated",
             "value": "API anahtarı"
+          }
+        }
+      }
+    },
+    "About %1$@ · %2$lld call(s)": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yaklaşık %1$@ · %2$lld çağrı"
+          }
+        }
+      }
+    },
+    "About %@ for a four second clip. The frame is made first, so a clip costs both.": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dört saniyelik klip için yaklaşık %@. Önce kare üretildiği için klip ikisinin toplamına mal olur."
+          }
+        }
+      }
+    },
+    "About %@ per fitted garment.": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giydirilen parça başına yaklaşık %@."
           }
         }
       }
@@ -448,6 +492,17 @@
         }
       }
     },
+    "Add a photo of yourself in Profile first.": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önce Profil’den kendi fotoğrafını ekle."
+          }
+        }
+      }
+    },
     "Add a place": {
       "extractionState": "manual",
       "localizations": {
@@ -455,6 +510,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Yer ekle"
+          }
+        }
+      }
+    },
+    "Add an API key for this engine in Profile › Virtual try-on.": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu motor için Profil › Sanal deneme bölümünden API anahtarı ekle."
           }
         }
       }
@@ -499,6 +565,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kullanmak için Ayarlar’dan %@ API anahtarını ekle."
+          }
+        }
+      }
+    },
+    "Add your %@ API key to use it.": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanmak için %@ API anahtarını ekle."
+          }
+        }
+      }
+    },
+    "Add your face once. The body stays the same in every outfit.": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yüzünü bir kez ekle. Vücut her kombinde aynı kalır."
           }
         }
       }
@@ -602,6 +690,17 @@
         }
       }
     },
+    "Athletic": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atletik"
+          }
+        }
+      }
+    },
     "Autumn": {
       "extractionState": "manual",
       "localizations": {
@@ -609,6 +708,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sonbahar"
+          }
+        }
+      }
+    },
+    "Average": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ortalama"
           }
         }
       }
@@ -723,6 +833,17 @@
         }
       }
     },
+    "Build": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yapı"
+          }
+        }
+      }
+    },
     "Build an outfit": {
       "extractionState": "manual",
       "localizations": {
@@ -730,6 +851,50 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kombin oluştur"
+          }
+        }
+      }
+    },
+    "Build it again": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeniden oluştur"
+          }
+        }
+      }
+    },
+    "Build my stand-in": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mankenimi oluştur"
+          }
+        }
+      }
+    },
+    "Built for try-on, so fabric and print stay truest. One garment per call, so a full look costs a few runs.": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Denemeye özel üretilmiş; kumaş ve baskıyı en sadık koruyan. Çağrı başına tek parça, yani tam kombin birkaç çağrı eder."
+          }
+        }
+      }
+    },
+    "Built once with Gemini, about $0.03. Change the height or build and make it again whenever you like.": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini ile bir kez üretilir, yaklaşık $0.03. Boyu ya da yapıyı değiştirip istediğin zaman yeniden oluşturabilirsin."
           }
         }
       }
@@ -800,6 +965,28 @@
         }
       }
     },
+    "Change": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Değiştir"
+          }
+        }
+      }
+    },
+    "Change face photo": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yüz fotoğrafını değiştir"
+          }
+        }
+      }
+    },
     "Change key or model": {
       "extractionState": "manual",
       "localizations": {
@@ -807,6 +994,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Anahtarı veya modeli değiştir"
+          }
+        }
+      }
+    },
+    "Choose": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seç"
+          }
+        }
+      }
+    },
+    "Choose a face photo": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yüz fotoğrafı seç"
           }
         }
       }
@@ -910,6 +1119,17 @@
         }
       }
     },
+    "Curvy": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dolgun"
+          }
+        }
+      }
+    },
     "DeepSeek models. deepseek-flash supports images.": {
       "extractionState": "manual",
       "localizations": {
@@ -976,6 +1196,17 @@
         }
       }
     },
+    "Dresses you in the whole outfit in one go — the cheapest option, and it uses the Gemini key you may already have.": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tüm kombini tek seferde giydirir — en ucuzu ve zaten girmiş olabileceğin Gemini anahtarını kullanır."
+          }
+        }
+      }
+    },
     "Edit": {
       "extractionState": "manual",
       "localizations": {
@@ -994,6 +1225,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Parçayı düzenle"
+          }
+        }
+      }
+    },
+    "Engine": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Motor"
           }
         }
       }
@@ -1027,6 +1269,39 @@
           "stringUnit": {
             "state": "translated",
             "value": "BUGÜN SENİN İÇİN"
+          }
+        }
+      }
+    },
+    "Face only": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sadece yüz"
+          }
+        }
+      }
+    },
+    "Filming the turnaround…": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dönüş çekiliyor…"
+          }
+        }
+      }
+    },
+    "Fitting the outfit…": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kombin giydiriliyor…"
           }
         }
       }
@@ -1152,6 +1427,17 @@
         }
       }
     },
+    "Google's Veo, through the same Gemini key.": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google’ın Veo’su, aynı Gemini anahtarıyla."
+          }
+        }
+      }
+    },
     "Green": {
       "extractionState": "manual",
       "localizations": {
@@ -1203,6 +1489,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Topuklular"
+          }
+        }
+      }
+    },
+    "Height": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boy"
           }
         }
       }
@@ -1339,6 +1636,17 @@
         }
       }
     },
+    "Kling on fal, through the same fal key.": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "fal üzerinde Kling, aynı fal anahtarıyla."
+          }
+        }
+      }
+    },
     "Library": {
       "extractionState": "manual",
       "localizations": {
@@ -1379,6 +1687,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bağlantı"
+          }
+        }
+      }
+    },
+    "Make another": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeniden oluştur"
           }
         }
       }
@@ -1691,6 +2010,28 @@
         }
       }
     },
+    "One photo of you in this outfit.": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu kombinle tek bir fotoğrafın."
+          }
+        }
+      }
+    },
+    "Open try-on model running on fal. One garment per call.": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "fal üzerinde çalışan açık kaynak deneme modeli. Çağrı başına tek parça."
+          }
+        }
+      }
+    },
     "Optional, and applies to every item here.": {
       "extractionState": "manual",
       "localizations": {
@@ -1709,6 +2050,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "İsteğe bağlı. Sonra bulmanı kolaylaştırır."
+          }
+        }
+      }
+    },
+    "Or use my own full-length photo": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ya da kendi boy fotoğrafımı kullan"
           }
         }
       }
@@ -1764,6 +2116,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kombinler"
+          }
+        }
+      }
+    },
+    "Outfits are fitted onto this stand-in, so you are the same person in every look.": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kombinler bu mankene giydirilir; böylece her görünümde aynı kişi olursun."
           }
         }
       }
@@ -1922,6 +2285,17 @@
         }
       }
     },
+    "Remove": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaldır"
+          }
+        }
+      }
+    },
     "Remove from favourites": {
       "extractionState": "manual",
       "localizations": {
@@ -1929,6 +2303,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Favorilerden çıkar"
+          }
+        }
+      }
+    },
+    "Result": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonuç"
           }
         }
       }
@@ -2109,6 +2494,28 @@
         }
       }
     },
+    "Single frame": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tek kare"
+          }
+        }
+      }
+    },
+    "Slim": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İnce"
+          }
+        }
+      }
+    },
     "Smart casual": {
       "extractionState": "manual",
       "localizations": {
@@ -2274,6 +2681,39 @@
         }
       }
     },
+    "The clip took too long.": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Klip çok uzun sürdü."
+          }
+        }
+      }
+    },
+    "The engine returned no image.": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Motor görsel döndürmedi."
+          }
+        }
+      }
+    },
+    "The fitting took too long.": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giydirme çok uzun sürdü."
+          }
+        }
+      }
+    },
     "The model returned no usable outfits.": {
       "extractionState": "manual",
       "localizations": {
@@ -2340,6 +2780,17 @@
         }
       }
     },
+    "This can take up to a minute.": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu bir dakikayı bulabilir."
+          }
+        }
+      }
+    },
     "This model can't read images — photo analysis will run on device.": {
       "extractionState": "manual",
       "localizations": {
@@ -2358,6 +2809,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bu ay"
+          }
+        }
+      }
+    },
+    "This outfit has nothing this engine can fit.": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu kombinde bu motorun giydirebileceği bir parça yok."
           }
         }
       }
@@ -2435,6 +2897,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Başka bir arama ya da filtre dene."
+          }
+        }
+      }
+    },
+    "Try it on": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Üzerimde dene"
+          }
+        }
+      }
+    },
+    "Try on": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dene"
           }
         }
       }
@@ -2523,6 +3007,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Yelekler"
+          }
+        }
+      }
+    },
+    "Video": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video"
+          }
+        }
+      }
+    },
+    "Virtual try-on": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sanal deneme"
           }
         }
       }
@@ -2626,6 +3132,17 @@
         }
       }
     },
+    "Working…": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çalışıyor…"
+          }
+        }
+      }
+    },
     "Works — %@ replied.": {
       "extractionState": "manual",
       "localizations": {
@@ -2710,6 +3227,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Adın"
+          }
+        }
+      }
+    },
+    "Your photo and the engines that dress it": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fotoğrafın ve onu giydiren motorlar"
+          }
+        }
+      }
+    },
+    "Your stand-in": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mankenin"
           }
         }
       }

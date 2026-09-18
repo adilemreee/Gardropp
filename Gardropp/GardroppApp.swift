@@ -7,6 +7,8 @@ struct GardroppApp: App {
     @State private var aiSettings: AISettings
     @State private var aiService: AIService
     @State private var weather = WeatherService()
+    @State private var tryOnSettings: TryOnSettings
+    @State private var tryOn: TryOnService
 
     private let container: ModelContainer
 
@@ -14,6 +16,10 @@ struct GardroppApp: App {
         let aiSettings = AISettings()
         _aiSettings = State(initialValue: aiSettings)
         _aiService = State(initialValue: AIService(settings: aiSettings))
+
+        let tryOnSettings = TryOnSettings()
+        _tryOnSettings = State(initialValue: tryOnSettings)
+        _tryOn = State(initialValue: TryOnService(settings: tryOnSettings))
 
         do {
             container = try ModelContainer(
@@ -35,6 +41,8 @@ struct GardroppApp: App {
                 .environment(aiSettings)
                 .environment(aiService)
                 .environment(weather)
+                .environment(tryOnSettings)
+                .environment(tryOn)
                 .tint(Color.textPrimary)
         }
         .modelContainer(container)

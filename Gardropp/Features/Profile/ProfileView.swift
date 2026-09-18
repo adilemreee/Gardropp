@@ -74,6 +74,28 @@ struct ProfileView: View {
                     }
                     .buttonStyle(.plain)
 
+                    NavigationLink {
+                        TryOnSettingsView()
+                    } label: {
+                        card {
+                            HStack(spacing: 12) {
+                                Image(systemName: "person.crop.square").font(.system(size: 16, weight: .medium))
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text("Virtual try-on").font(.system(size: 15, weight: .semibold))
+                                    Text("Your photo and the engines that dress it")
+                                        .font(.system(size: 12))
+                                        .foregroundStyle(Color.textSecondary)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundStyle(Color.textSecondary)
+                            }
+                            .foregroundStyle(Color.textPrimary)
+                        }
+                    }
+                    .buttonStyle(.plain)
+
                     card {
                         VStack(alignment: .leading, spacing: 10) {
                             Text("Where you keep things").font(.system(size: 13, weight: .semibold))

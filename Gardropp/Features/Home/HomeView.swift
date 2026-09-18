@@ -12,6 +12,7 @@ struct HomeView: View {
     @Query(sort: \ClothingItem.createdAt, order: .reverse) private var items: [ClothingItem]
     @State private var model = SuggestionModel()
     @State private var isScanning = false
+    @State private var tryOnSelection: TryOnSelection?
 
     var body: some View {
         NavigationStack {
@@ -39,7 +40,8 @@ struct HomeView: View {
                             temperature: temperatureText,
                             onDismiss: { withAnimation(.snappy) { model.dismiss(hero) } },
                             onLike: { like(hero) },
-                            onWear: { wear(hero) }
+                            onWear: { wear(hero) },
+                            onTryOn: { tryOnSelection = TryOnSelection(items: hero.items, title: hero.title) }
                         )
 
                         if model.visible.count > 1 {
@@ -74,6 +76,9 @@ struct HomeView: View {
         .onChange(of: items.count) { _, _ in Task { await refresh() } }
         .onChange(of: model.occasion) { _, _ in Task { await refresh() } }
         .fullScreenCover(isPresented: $isScanning) { ScanFlowView { _ in } }
+        .sheet(item: $tryOnSelection) { selection in
+            TryOnView(items: selection.items, outfitTitle: selection.title)
+        }
     }
 
     // MARK: - Header
@@ -275,6 +280,7 @@ struct OutfitSuggestionCard: View {
     var onDismiss: () -> Void
     var onLike: () -> Void
     var onWear: () -> Void
+    var onTryOn: () -> Void
 
     var body: some View {
         VStack(spacing: 14) {
@@ -300,26 +306,10 @@ struct OutfitSuggestionCard: View {
                     }
                 }
 
-                HStack(spacing: 10) {
-                    Button(action: onDismiss) {
-                        Label("Dismiss", systemImage: "xmark")
-                            .font(.system(size: 15, weight: .medium))
-                            .foregroundStyle(Color.textPrimary)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(Color.surfaceElevated.opacity(0.6), in: .rect(cornerRadius: Theme.Radius.chip))
-                    }
-                    .buttonStyle(.plain)
-
-                    Button(action: onLike) {
-                        Label("Like", systemImage: "heart")
-                            .font(.system(size: 15, weight: .medium))
-                            .foregroundStyle(Color.textPrimary)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(Color.surfaceElevated.opacity(0.6), in: .rect(cornerRadius: Theme.Radius.chip))
-                    }
-                    .buttonStyle(.plain)
+                HStack(spacing: 8) {
+                    secondaryAction("Dismiss", symbol: "xmark", action: onDismiss)
+                    secondaryAction("Like", symbol: "heart", action: onLike)
+                    secondaryAction("Try on", symbol: "person.crop.square", action: onTryOn)
                 }
 
                 Button(action: onWear) {
@@ -332,6 +322,20 @@ struct OutfitSuggestionCard: View {
         .cardBackground(Theme.Radius.card)
     }
 
+    private func secondaryAction(_ title: LocalizedStringKey, symbol: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(spacing: 3) {
+                Image(systemName: symbol).font(.system(size: 14, weight: .medium))
+                Text(title).font(.system(size: 12, weight: .medium))
+            }
+            .foregroundStyle(Color.textPrimary)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 10)
+            .background(Color.surfaceElevated.opacity(0.6), in: .rect(cornerRadius: Theme.Radius.chip))
+        }
+        .buttonStyle(.plain)
+    }
+
     private func reason(symbol: String, text: String) -> some View {
         HStack(alignment: .top, spacing: 6) {
             Image(systemName: symbol).font(.system(size: 11))
@@ -340,4 +344,12 @@ struct OutfitSuggestionCard: View {
         .foregroundStyle(Color.textSecondary)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
+}
+
+
+/// Wraps the picked outfit so it can drive an `item:` sheet.
+private struct TryOnSelection: Identifiable {
+    let id = UUID()
+    let items: [ClothingItem]
+    let title: String
 }

@@ -113,6 +113,7 @@ struct OutfitDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Environment(\.showToast) private var showToast
+    @State private var isTryingOn = false
 
     var body: some View {
         ScrollView {
@@ -149,6 +150,14 @@ struct OutfitDetailView: View {
                 }
 
                 Button {
+                    isTryingOn = true
+                } label: {
+                    Label("Try it on", systemImage: "person.crop.square")
+                }
+                .buttonStyle(SecondaryButtonStyle())
+                .padding(.top, 4)
+
+                Button {
                     outfit.markWorn()
                     modelContext.insert(WearEvent(outfitTitle: outfit.title, items: outfit.items))
                     try? modelContext.save()
@@ -157,13 +166,15 @@ struct OutfitDetailView: View {
                     Label("Wearing this today", systemImage: "checkmark.circle")
                 }
                 .buttonStyle(PrimaryButtonStyle())
-                .padding(.top, 4)
             }
             .padding(.horizontal, Theme.Spacing.gutter)
             .padding(.bottom, 110)
         }
         .scrollIndicators(.hidden)
         .background(Color.canvas)
+        .sheet(isPresented: $isTryingOn) {
+            TryOnView(items: outfit.items, outfitTitle: outfit.title)
+        }
         .navigationTitle(Text("Outfit"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
