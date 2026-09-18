@@ -1,3 +1,4 @@
+import OSLog
 import UIKit
 import WebKit
 
@@ -8,10 +9,27 @@ import WebKit
 @MainActor
 final class WebProductLoader: NSObject {
 
+    private static let log = Logger(subsystem: "com.gardropp", category: "linkimport")
+
     private var webView: WKWebView?
     private var continuation: CheckedContinuation<String?, Never>?
     private var settleTask: Task<Void, Never>?
     private var attempts = 0
+
+    struct Rendered {
+        var html: String?
+        /// Sizeable images in the order the page lays them out — the product
+        /// gallery, which the link-preview tag only shows one frame of.
+        var imageURLs: [URL] = []
+    }
+
+    /// Loads the page, lets its scripts run, and reads back what it rendered.
+    func load(_ url: URL, timeout: TimeInterval = 30) async -> Rendered {
+        let html = await self.html(for: url, timeout: timeout)
+        return Rendered(html: html, imageURLs: collectedImages)
+    }
+
+    private var collectedImages: [URL] = []
 
     /// Returns the page's HTML once its scripts have run, or nil on timeout.
     func html(for url: URL, timeout: TimeInterval = 30) async -> String? {
@@ -54,6 +72,60 @@ final class WebProductLoader: NSObject {
         return result
     }
 
+    /// Reads the gallery straight out of the rendered page. Shops lazy-load the
+    /// rest of the gallery, so the page is nudged down first and the markup's
+    /// own lazy attributes are read as well as what has actually loaded.
+    private func collectImages(from webView: WKWebView) async {
+        _ = try? await webView.evaluateJavaScript(
+            "window.scrollTo(0, document.body.scrollHeight * 0.5); true"
+        )
+        try? await Task.sleep(for: .seconds(1.2))
+        _ = try? await webView.evaluateJavaScript(
+            "window.scrollTo(0, document.body.scrollHeight * 0.85); true"
+        )
+        try? await Task.sleep(for: .seconds(1.2))
+
+        let script = """
+        (function () {
+          function widest(set) {
+            if (!set) return null;
+            var best = null, bestW = 0;
+            set.split(',').forEach(function (part) {
+              var bits = part.trim().split(/\\s+/);
+              if (!bits[0]) return;
+              var w = bits[1] ? parseInt(bits[1], 10) : 0;
+              if (!best || w >= bestW) { best = bits[0]; bestW = w; }
+            });
+            return best;
+          }
+          var seen = {}, out = [];
+          var nodes = document.querySelectorAll('img, source');
+          for (var i = 0; i < nodes.length; i++) {
+            var el = nodes[i];
+            var src = el.currentSrc || widest(el.getAttribute('srcset')) ||
+                      el.getAttribute('src') || el.getAttribute('data-src');
+            if (!src || src.indexOf('http') !== 0 || seen[src]) continue;
+            var natural = el.naturalWidth || 0;
+            var box = el.getBoundingClientRect();
+            var wide = natural >= 300 || box.width >= 200 || /w=\\d{3,}/.test(src);
+            if (!wide) continue;
+            seen[src] = 1;
+            out.push({ src: src, y: box.top + window.scrollY });
+          }
+          out.sort(function (a, b) { return a.y - b.y; });
+          return JSON.stringify(out.slice(0, 14).map(function (o) { return o.src; }));
+        })()
+        """
+        guard let json = try? await webView.evaluateJavaScript(script) as? String,
+              let data = json.data(using: .utf8),
+              let urls = try? JSONDecoder().decode([String].self, from: data) else {
+            Self.log.notice("Gallery scan returned nothing")
+            return
+        }
+        collectedImages = urls.compactMap(URL.init(string:))
+        Self.log.notice("Gallery scan found \(self.collectedImages.count, privacy: .public) images")
+    }
+
     private func cleanUp() {
         settleTask?.cancel()
         settleTask = nil
@@ -77,8 +149,8 @@ final class WebProductLoader: NSObject {
             try? await Task.sleep(for: .seconds(1.5))
             guard let self, let webView, !Task.isCancelled else { return }
 
-            let script = "document.documentElement.outerHTML"
-            let html = try? await webView.evaluateJavaScript(script) as? String
+            let html = try? await webView.evaluateJavaScript("document.documentElement.outerHTML") as? String
+            await collectImages(from: webView)
 
             guard let html else {
                 finish(nil)

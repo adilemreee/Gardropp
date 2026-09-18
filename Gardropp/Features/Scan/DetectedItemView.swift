@@ -24,6 +24,10 @@ struct DetectedItemView: View {
                         .frame(height: 300)
                         .cardBackground(Theme.Radius.sheet)
 
+                    if !draft.alternativeFilenames.isEmpty {
+                        photoChoices
+                    }
+
                     if let notice = draft.fallbackNotice {
                         FallbackBanner(message: notice)
                     }
@@ -69,6 +73,36 @@ struct DetectedItemView: View {
             Button("Cancel", role: .cancel) { newLocationName = "" }
             Button("Add") { addLocation() }
         }
+    }
+
+    /// Shops publish the same garment on a model and on its own. The better
+    /// looking one is picked automatically; this is how you overrule it.
+    private var photoChoices: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Another photo from the shop")
+                .font(.system(size: 13, weight: .semibold))
+
+            ScrollView(.horizontal) {
+                HStack(spacing: 8) {
+                    ForEach(draft.alternativeFilenames, id: \.self) { filename in
+                        Button {
+                            Task { await draft.use(alternative: filename) }
+                        } label: {
+                            GarmentThumbnail(filename: filename, fallbackSymbol: draft.category.symbol, padding: 0)
+                                .frame(width: 62, height: 82)
+                                .clipShape(.rect(cornerRadius: 10))
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 10).stroke(Color.hairline, lineWidth: 0.5)
+                                }
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.vertical, 2)
+            }
+            .scrollIndicators(.hidden)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     // MARK: - Where do you keep it

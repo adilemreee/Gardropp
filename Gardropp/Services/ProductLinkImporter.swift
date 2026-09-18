@@ -10,8 +10,11 @@ enum ProductLinkImporter {
         var title: String?
         var brand: String?
         var colorName: String?
-        var imageURL: URL?
+        /// Every product photo the page offers, in the order it lists them.
+        var imageURLs: [URL] = []
         var siteName: String?
+
+        var imageURL: URL? { imageURLs.first }
     }
 
     enum ImportError: LocalizedError {
@@ -46,18 +49,61 @@ enum ProductLinkImporter {
     /// Shops that answer with a bot challenge instead of markup are retried in
     /// a real web view, which clears the challenge the way a browser does.
     @MainActor
-    static func load(_ url: URL) async throws -> (product: Product, image: UIImage) {
+    static func load(_ url: URL) async throws -> Loaded {
         do {
             return try await loadDirectly(url)
         } catch {
-            guard let html = await WebProductLoader().html(for: url) else { throw error }
-            let product = parse(html: html, pageURL: url)
-            guard let imageURL = product.imageURL else { throw ImportError.noGarmentFound }
-            return (product, try await downloadImage(imageURL, referer: url))
+            let rendered = await WebProductLoader().load(url)
+            guard let html = rendered.html else { throw error }
+
+            var product = parse(html: html, pageURL: url)
+            // The gallery in the rendered page usually holds the plain shots
+            // the link-preview tag leaves out.
+            product.imageURLs = merge(product.imageURLs, rendered.imageURLs)
+            return try await loaded(product: product, referer: url)
         }
     }
 
-    private static func loadDirectly(_ url: URL) async throws -> (product: Product, image: UIImage) {
+    /// What a product page gave us: the photo to use, and the others it offers
+    /// so the choice can be handed to the user.
+    struct Loaded {
+        var product: Product
+        var image: UIImage
+        var alternatives: [UIImage]
+    }
+
+    /// One entry per photo: same picture at three widths is still one photo,
+    /// and third-party logos are not photos at all.
+    private static func merge(_ first: [URL], _ second: [URL]) -> [URL] {
+        let skip = ["logo", "icon", "sprite", "placeholder", "favicon", "banner", "cookielaw"]
+        var seen = Set<String>()
+        return (first + second).filter { url in
+            let lowered = url.absoluteString.lowercased()
+            guard !skip.contains(where: { lowered.contains($0) }) else { return false }
+            return seen.insert((url.host ?? "") + url.path).inserted
+        }
+    }
+
+    /// Downloads the first few candidates and keeps the one that looks most
+    /// like the garment on its own rather than on a model.
+    private static func loaded(product: Product, referer: URL) async throws -> Loaded {
+        let candidates = Array(product.imageURLs.prefix(6))
+        guard !candidates.isEmpty else { throw ImportError.noGarmentFound }
+
+        var images: [UIImage] = []
+        for candidate in candidates {
+            if let image = try? await downloadImage(candidate, referer: referer) {
+                images.append(image)
+            }
+        }
+        guard let first = images.first else { throw ImportError.noGarmentFound }
+
+        let best = await GarmentImagePicker.best(of: images) ?? first
+        let others = images.filter { $0 !== best }
+        return Loaded(product: product, image: best, alternatives: others)
+    }
+
+    private static func loadDirectly(_ url: URL) async throws -> Loaded {
         var request = URLRequest(url: url, timeoutInterval: 25)
         // Shops serve their full markup — including the link-preview tags — to browsers.
         request.setValue(
@@ -73,8 +119,7 @@ enum ProductLinkImporter {
         guard let html = decodeHTML(data) else { throw ImportError.unreachable }
 
         let product = parse(html: html, pageURL: http.url ?? url)
-        guard let imageURL = product.imageURL else { throw ImportError.noGarmentFound }
-        return (product, try await downloadImage(imageURL, referer: url))
+        return try await loaded(product: product, referer: url)
     }
 
     private static func downloadImage(_ imageURL: URL, referer: URL) async throws -> UIImage {
@@ -96,16 +141,17 @@ enum ProductLinkImporter {
             product.title = (node["name"] as? String)?.cleanedText
             product.brand = brandName(from: node["brand"])
             product.colorName = (node["color"] as? String)?.cleanedText
-            if let image = firstImage(from: node["image"]) {
-                product.imageURL = URL(string: image, relativeTo: pageURL)?.absoluteURL
-            }
+            product.imageURLs = allImages(from: node["image"])
+                .compactMap { URL(string: $0, relativeTo: pageURL)?.absoluteURL }
             break
         }
 
         // Open Graph fills whatever is still missing.
         let meta = metaTags(in: html)
-        if product.imageURL == nil, let image = meta["og:image"] ?? meta["twitter:image"] {
-            product.imageURL = URL(string: image.cleanedText, relativeTo: pageURL)?.absoluteURL
+        for tag in ["og:image", "twitter:image"] {
+            guard let value = meta[tag],
+                  let image = URL(string: value.cleanedText, relativeTo: pageURL)?.absoluteURL else { continue }
+            if !product.imageURLs.contains(image) { product.imageURLs.append(image) }
         }
         if product.title == nil {
             product.title = (meta["og:title"] ?? meta["twitter:title"] ?? titleTag(in: html))?.cleanedText
@@ -115,7 +161,49 @@ enum ProductLinkImporter {
         }
         product.siteName = meta["og:site_name"]?.cleanedText ?? pageURL.host
 
+        // Shops keep their whole gallery in an embedded JSON blob long before
+        // the <img> tags for it exist, so the markup itself is scanned too.
+        product.imageURLs += scanImageURLs(in: html, host: product.imageURL?.host)
+            .filter { !product.imageURLs.contains($0) }
+
         return product
+    }
+
+    /// Every image address on the same host as the main photo, in page order.
+    private static func scanImageURLs(in html: String, host: String?) -> [URL] {
+        guard let host, !host.isEmpty else { return [] }
+        // JSON embedded in the page escapes its slashes.
+        let text = html
+            .replacingOccurrences(of: "\\/", with: "/")
+            .replacingOccurrences(of: "\\u002F", with: "/", options: .caseInsensitive)
+
+        let marker = "https://" + host
+        let stops = CharacterSet(charactersIn: "\"'<>\\ \n\t\r),;")
+        let skip = ["logo", "icon", "sprite", "placeholder", "favicon", "banner"]
+        let extensions = [".jpg", ".jpeg", ".png", ".webp"]
+
+        var found: [URL] = []
+        var seen = Set<String>()
+        var cursor = text[...]
+
+        while let start = cursor.range(of: marker), found.count < 14 {
+            let rest = cursor[start.lowerBound...]
+            let end = rest.rangeOfCharacter(from: stops)?.lowerBound ?? rest.endIndex
+            let candidate = String(rest[..<end])
+            cursor = rest[end...]
+
+            let lowered = candidate.lowercased()
+            guard extensions.contains(where: { lowered.contains($0) }),
+                  !skip.contains(where: { lowered.contains($0) }),
+                  let url = URL(string: candidate) else { continue }
+
+            // One entry per photo, whatever size variants the page lists.
+            let identity = url.path
+            if seen.insert(identity).inserted {
+                found.append(url)
+            }
+        }
+        return found
     }
 
     private static func decodeHTML(_ data: Data) -> String? {
@@ -178,11 +266,11 @@ enum ProductLinkImporter {
         return nil
     }
 
-    private static func firstImage(from value: Any?) -> String? {
-        if let single = value as? String { return single.cleanedText }
-        if let array = value as? [Any] { return array.compactMap { firstImage(from: $0) }.first }
-        if let object = value as? [String: Any] { return firstImage(from: object["url"] ?? object["contentUrl"]) }
-        return nil
+    private static func allImages(from value: Any?) -> [String] {
+        if let single = value as? String { return [single.cleanedText] }
+        if let array = value as? [Any] { return array.flatMap { allImages(from: $0) } }
+        if let object = value as? [String: Any] { return allImages(from: object["url"] ?? object["contentUrl"]) }
+        return []
     }
 
     // MARK: Meta tags

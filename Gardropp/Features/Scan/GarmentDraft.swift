@@ -23,8 +23,10 @@ final class GarmentDraft: Identifiable {
     var notes: String
     var locationName: String?
 
-    let imageFilename: String
+    private(set) var imageFilename: String
     let originalFilename: String?
+    /// Other photos the shop offered, to switch between.
+    var alternativeFilenames: [String] = []
     let engine: String
     let confidence: Double
     /// Set when a cloud engine failed and the on-device one answered instead.
@@ -71,8 +73,12 @@ final class GarmentDraft: Identifiable {
             .joined(separator: " / ")
     }
 
-    /// Turns the draft into a stored item. The images are already on disk.
+    /// Turns the draft into a stored item. The images are already on disk; the
+    /// photos that were not chosen are not needed any more.
     func makeItem() -> ClothingItem {
+        for filename in alternativeFilenames { ImageStore.shared.delete(filename) }
+        alternativeFilenames = []
+
         let item = ClothingItem(
             name: name.trimmingCharacters(in: .whitespacesAndNewlines),
             category: category,
@@ -94,9 +100,32 @@ final class GarmentDraft: Identifiable {
         return item
     }
 
+    /// Swaps in one of the shop's other photos, keeping the catalogue entry but
+    /// re-reading the colour, which is the one thing tied to the picture.
+    @MainActor
+    func use(alternative filename: String) async {
+        guard let source = ImageStore.shared.image(named: filename) else { return }
+        let processed = await GarmentImageProcessor.process(source)
+        guard let saved = try? ImageStore.shared.save(processed.cutout, format: .png) else { return }
+
+        // The one being replaced becomes an alternative, so switching back is
+        // free — its file stays on disk until the draft is saved or thrown away.
+        var others = alternativeFilenames
+        others.removeAll { $0 == filename }
+        others.append(imageFilename)
+
+        imageFilename = saved
+        alternativeFilenames = others
+
+        let swatch = ColorAnalyzer.dominantSwatch(of: processed.cutout)
+        colorHex = swatch.hex
+        colorFamily = swatch.family
+    }
+
     /// Throws the photos away again when the draft is abandoned.
     func discard() {
         ImageStore.shared.delete(imageFilename)
         ImageStore.shared.delete(originalFilename)
+        for filename in alternativeFilenames { ImageStore.shared.delete(filename) }
     }
 }

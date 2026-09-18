@@ -263,10 +263,10 @@ struct ScanFlowView: View {
         withAnimation(.snappy) { phase = .readingLink(url.host() ?? url.absoluteString) }
 
         do {
-            let (product, image) = try await ProductLinkImporter.load(url)
-            withAnimation(.snappy) { phase = .processing(image) }
+            let loaded = try await ProductLinkImporter.load(url)
+            withAnimation(.snappy) { phase = .processing(loaded.image) }
             guard let draft = await GarmentScanner.makeDraft(
-                from: product, image: image, sourceURL: url, ai: ai
+                from: loaded, sourceURL: url, ai: ai
             ) else {
                 throw ProductLinkImporter.ImportError.noGarmentFound
             }

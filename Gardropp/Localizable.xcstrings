@@ -668,6 +668,17 @@
         }
       }
     },
+    "Another photo from the shop": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mağazadan başka bir fotoğraf"
+          }
+        }
+      }
+    },
     "Anthropic's Claude models. Strong at reading logos and naming garments.": {
       "extractionState": "manual",
       "localizations": {

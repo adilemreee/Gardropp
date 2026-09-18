@@ -41,12 +41,17 @@ extension GarmentScanner {
     /// exist, because the shop knows its product better than any model does.
     @MainActor
     static func makeDraft(
-        from product: ProductLinkImporter.Product,
-        image: UIImage,
+        from loaded: ProductLinkImporter.Loaded,
         sourceURL: URL,
         ai: AIService
     ) async -> GarmentDraft? {
-        guard let draft = await makeDraft(from: image, ai: ai) else { return nil }
+        let product = loaded.product
+        guard let draft = await makeDraft(from: loaded.image, ai: ai) else { return nil }
+
+        // Keep the shop's other photos so the user can switch to one of them.
+        draft.alternativeFilenames = loaded.alternatives.compactMap {
+            try? ImageStore.shared.save($0.resized(maxEdge: 1600), format: .jpeg(quality: 0.9))
+        }
 
         if let title = product.title?.productName, !title.isEmpty {
             draft.name = title
