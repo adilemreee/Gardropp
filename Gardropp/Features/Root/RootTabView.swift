@@ -9,6 +9,8 @@ struct RootTabView: View {
     @State private var selection: Tab = .home
     @State private var isScanning = false
     @State private var toast: ToastMessage?
+    @State private var sharedLink: SharedLink?
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -39,6 +41,18 @@ struct RootTabView: View {
             ScanFlowView { count in
                 selection = .clothes
                 show(ToastMessage(text: String(localized: "\(count) items added")))
+            }
+        }
+        .fullScreenCover(item: $sharedLink) { link in
+            ScanFlowView(onSaved: { count in
+                selection = .clothes
+                show(ToastMessage(text: String(localized: "\(count) items added")))
+            }, initialLink: link.url)
+        }
+        .onChange(of: scenePhase) { _, phase in
+            // Links shared into the app from elsewhere wait here until it opens.
+            if phase == .active, sharedLink == nil, let url = SharedInbox.takeNext() {
+                sharedLink = SharedLink(url: url)
             }
         }
         .animation(.snappy(duration: 0.25), value: selection)
@@ -112,6 +126,12 @@ struct FloatingTabBar: View {
 }
 
 // MARK: - Toast
+
+/// A link the share extension left behind, wrapped so it can drive a sheet.
+struct SharedLink: Identifiable {
+    let id = UUID()
+    let url: URL
+}
 
 struct ToastMessage: Equatable, Identifiable {
     let id = UUID()

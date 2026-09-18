@@ -43,7 +43,21 @@ enum ProductLinkImporter {
     }
 
     /// Fetches the page, reads its product metadata, then downloads the photo.
+    /// Shops that answer with a bot challenge instead of markup are retried in
+    /// a real web view, which clears the challenge the way a browser does.
+    @MainActor
     static func load(_ url: URL) async throws -> (product: Product, image: UIImage) {
+        do {
+            return try await loadDirectly(url)
+        } catch {
+            guard let html = await WebProductLoader().html(for: url) else { throw error }
+            let product = parse(html: html, pageURL: url)
+            guard let imageURL = product.imageURL else { throw ImportError.noGarmentFound }
+            return (product, try await downloadImage(imageURL, referer: url))
+        }
+    }
+
+    private static func loadDirectly(_ url: URL) async throws -> (product: Product, image: UIImage) {
         var request = URLRequest(url: url, timeoutInterval: 25)
         // Shops serve their full markup — including the link-preview tags — to browsers.
         request.setValue(
@@ -60,13 +74,15 @@ enum ProductLinkImporter {
 
         let product = parse(html: html, pageURL: http.url ?? url)
         guard let imageURL = product.imageURL else { throw ImportError.noGarmentFound }
+        return (product, try await downloadImage(imageURL, referer: url))
+    }
 
-        var imageRequest = URLRequest(url: imageURL, timeoutInterval: 25)
-        imageRequest.setValue(url.absoluteString, forHTTPHeaderField: "Referer")
-        let (imageData, _) = try await URLSession.shared.data(for: imageRequest)
-        guard let image = UIImage(data: imageData) else { throw ImportError.noGarmentFound }
-
-        return (product, image)
+    private static func downloadImage(_ imageURL: URL, referer: URL) async throws -> UIImage {
+        var request = URLRequest(url: imageURL, timeoutInterval: 25)
+        request.setValue(referer.absoluteString, forHTTPHeaderField: "Referer")
+        let (data, _) = try await URLSession.shared.data(for: request)
+        guard let image = UIImage(data: data) else { throw ImportError.noGarmentFound }
+        return image
     }
 
     // MARK: - Parsing

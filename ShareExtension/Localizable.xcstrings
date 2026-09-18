@@ -1,0 +1,24 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Added to Gardropp" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Gardropp'a eklendi" } }
+      }
+    },
+    "No link found" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Bağlantı bulunamadı" } }
+      }
+    },
+    "Open the app to finish adding it." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Eklemeyi tamamlamak için uygulamayı aç." } }
+      }
+    }
+  },
+  "version" : "1.0"
+}

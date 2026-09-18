@@ -9,6 +9,8 @@ import SwiftUI
 struct ScanFlowView: View {
     /// Called with how many items were added.
     var onSaved: (Int) -> Void
+    /// Set when the flow was opened by a link shared from another app.
+    var initialLink: URL?
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
@@ -52,7 +54,13 @@ struct ScanFlowView: View {
                 }
             }
         }
-        .task { await camera.start() }
+        .task {
+            if let initialLink {
+                await importLink(initialLink)
+            } else {
+                await camera.start()
+            }
+        }
         .onDisappear {
             camera.stop()
             if !didSave { discardPending() }

@@ -34,7 +34,11 @@ struct HomeView: View {
                     } else if model.isLoading && model.visible.isEmpty {
                         loadingCard
                     } else if let hero = model.visible.first {
-                        sectionLabel("FOR YOU TODAY")
+                        HStack(alignment: .firstTextBaseline) {
+                            sectionLabel("FOR YOU TODAY")
+                            Spacer()
+                            engineBadge
+                        }
                         OutfitSuggestionCard(
                             suggestion: hero,
                             temperature: temperatureText,
@@ -161,6 +165,27 @@ struct HomeView: View {
         }
     }
 
+    /// Says which engine wrote today's suggestions, and offers the better one
+    /// when they are still coming from the on-device fallback.
+    @ViewBuilder
+    private var engineBadge: some View {
+        let provider = ai.settings.provider
+        if provider != .onDevice, ai.settings.hasKey(for: provider) {
+            Label(provider.displayName, systemImage: "sparkles")
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(Color.textSecondary)
+        } else {
+            NavigationLink {
+                AISettingsView()
+            } label: {
+                Label("Better outfits with AI", systemImage: "sparkles")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(Color.textPrimary)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
     private func sectionLabel(_ text: LocalizedStringKey) -> some View {
         Text(text)
             .font(.system(size: 10, weight: .semibold))
@@ -203,9 +228,8 @@ struct HomeView: View {
                             wear(suggestion)
                         } label: {
                             VStack(alignment: .leading, spacing: 8) {
-                                OutfitStackView(items: suggestion.layered, compact: true)
-                                    .frame(height: 118)
-                                    .padding(.vertical, 6)
+                                OutfitLineup(items: suggestion.layered, compact: true)
+                                    .padding(.vertical, 4)
                                 Text(suggestion.title)
                                     .font(.system(size: 13, weight: .medium))
                                     .foregroundStyle(Color.textPrimary)
@@ -284,9 +308,8 @@ struct OutfitSuggestionCard: View {
 
     var body: some View {
         VStack(spacing: 14) {
-            OutfitStackView(items: suggestion.layered)
-                .frame(maxWidth: .infinity)
-                .padding(.top, 8)
+            OutfitLineup(items: suggestion.layered)
+                .padding(.top, 4)
 
             VStack(spacing: 10) {
                 HStack(alignment: .firstTextBaseline) {

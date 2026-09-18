@@ -77,9 +77,8 @@ struct OutfitsView: View {
 
     private func card(_ outfit: Outfit) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            OutfitStackView(items: outfit.layeredItems, compact: true)
-                .frame(height: 140)
-                .padding(.vertical, 8)
+            OutfitLineup(items: outfit.layeredItems, compact: true)
+                .padding(.vertical, 4)
             Text(outfit.title)
                 .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(Color.textPrimary)
@@ -118,9 +117,8 @@ struct OutfitDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                OutfitStackView(items: outfit.layeredItems)
-                    .padding(.vertical, 16)
-                    .frame(maxWidth: .infinity)
+                OutfitLineup(items: outfit.layeredItems)
+                    .padding(14)
                     .cardBackground(Theme.Radius.sheet)
 
                 VStack(alignment: .leading, spacing: 4) {
